@@ -50,27 +50,45 @@ const db = require('./helpers/db.js');
   });
 
   client.on('message', msg => {
-    if (msg.body == '!ping') {
-      msg.reply('pong');
-    } else if (msg.body == 'good morning') {
-      msg.reply('selamat pagi');
-    } else if (msg.body == '!groups') {
-      client.getChats().then(chats => {
-        const groups = chats.filter(chat => chat.isGroup);
-
-        if (groups.length == 0) {
-          msg.reply('You have no group yet.');
-        } else {
-          let replyMsg = '*YOUR GROUPS*\n\n';
-          groups.forEach((group, i) => {
-            replyMsg += `ID: ${group.id._serialized}\nName: ${group.name}\n\n`;
-          });
-          replyMsg += '_You can use the group id to send a message to the group._'
-          msg.reply(replyMsg);
-        }
-      });
-    }
-  });
+  let end = new Date()-start;
+  const responsenya = '*Bot Online* \n*Response time = ' + end + ' ms*';
+  const help = 'List menu\n1. p = Untuk cek koneksi dan response\n2. battery = Untuk cek info battery\n3. groups = untuk cek Id group\n\nFitur lain menyusul';
+  if (msg.body == 'p') {
+    msg.reply(responsenya);
+    console.log('Send message : ' + responsenya); 
+  } else if (msg.body == 'battery') {
+	//get  battery info
+	client.info.getBatteryStatus().then((number) => {
+		const obj = JSON.parse(JSON.stringify(number));
+		var mengisi;
+		if (obj.plugged === true) {
+		mengisi = "Sedang dicharge";
+		} else {
+		mengisi = "Tidak dicharge";
+		}
+		const batterinfolog = "*Battery Level : "+obj.battery+"%*, "+mengisi;
+        console.log(batterinfolog);
+		msg.reply(batterinfolog);
+    });
+  } else if (msg.body == 'groups') {
+    client.getChats().then(chats => {
+      const groups = chats.filter(chat => chat.isGroup);
+      if (groups.length == 0) {
+        msg.reply('You have no group yet.');
+      } else {
+        let replyMsg = '*YOUR GROUPS*\n\n';
+        groups.forEach((group, i) => {
+          replyMsg += `ID: ${group.id._serialized}\nName: ${group.name}\n\n`;
+        });
+        replyMsg += '_You can use the group id to send a message to the group._'
+        msg.reply(replyMsg);
+      }
+    });
+  } else if (msg.body == 'help'){
+	msg.reply(help);
+    console.log('Send message : ' + help);
+  }
+});
 
   client.initialize();
 
